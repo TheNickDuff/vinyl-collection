@@ -1,0 +1,9 @@
+{
+  "name": "VINYL COLLECTION",
+  "short_name": "VINYL",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2e9d8",
+  "theme_color": "#29231e",
+  "icons": []
+}

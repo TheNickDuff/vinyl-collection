@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#29231e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vinyl Collection">
+<link rel="manifest" href="manifest.json">
+<title>VINYL COLLECTION</title>
+<style>
+:root{--ink:#29231e;--paper:#f2e9d8;--card:#fffaf0;--rust:#a94f32;--gold:#c39a52;--muted:#817668;--line:#ded1bc}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;padding-bottom:90px}
+header{background:var(--ink);color:var(--paper);padding:25px 20px 19px;border-bottom:5px solid var(--rust)}
+.kicker{font:11px Arial,sans-serif;letter-spacing:3px;color:#d9b77b}.brand{font-size:29px;letter-spacing:1.5px;margin:7px 0 3px}.sub{font:12px Arial,sans-serif;color:#c9bca8}
+main{max-width:760px;margin:auto;padding:17px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:17px}
+.stat{background:var(--card);border:1px solid var(--line);padding:12px 9px;box-shadow:2px 3px 0 #d7c8b1}
+.stat b{display:block;font-size:22px;color:var(--rust)}.stat span{font:10px Arial,sans-serif;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.toolbar{display:flex;gap:8px;margin:12px 0}.toolbar input{flex:1;min-width:0}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#fffdf8;border-radius:3px;padding:12px;color:var(--ink);font:14px Arial,sans-serif}
+button,.btn{border:0;background:var(--rust);color:white;padding:12px 15px;border-radius:3px;font:12px Arial,sans-serif;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+button.secondary{background:#e4d8c5;color:var(--ink);border:1px solid var(--line)}
+button.dark{background:var(--ink)}button.small{padding:8px 10px;font-size:10px}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px}.sectionhead h2{font-size:19px;margin:0}.sectionhead small{font:11px Arial,sans-serif;color:var(--muted)}
+.record{display:grid;grid-template-columns:88px 1fr;gap:13px;background:var(--card);padding:11px;margin:10px 0;border:1px solid var(--line);box-shadow:2px 3px 0 #d7c8b1}
+.cover{width:88px;height:88px;background:linear-gradient(145deg,#d5c4a8,#9c8060);display:flex;align-items:center;justify-content:center;overflow:hidden;color:#5d4a37;font-size:25px}
+.cover img{width:100%;height:100%;object-fit:cover}.record h3{font-size:17px;margin:2px 0 4px}.artist{font:13px Arial,sans-serif;color:#675b4c}.meta{font:11px Arial,sans-serif;color:var(--muted);margin:7px 0}.price{font-size:16px;color:var(--rust);font-weight:bold}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.empty{text-align:center;padding:35px 15px;color:var(--muted);border:1px dashed #b9a88f;background:#f8f1e5}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--ink);display:flex;justify-content:space-around;padding:10px 6px calc(10px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:#e8dcc8;padding:8px 9px;font-size:10px;letter-spacing:.5px}
+nav button.active{color:#e2b56d;border-bottom:2px solid var(--rust)}
+.panel{display:none}.panel.active{display:block}
+dialog{border:0;border-radius:5px;background:var(--paper);color:var(--ink);width:min(94vw,520px);max-height:90vh;padding:0;box-shadow:0 10px 50px #0007}
+dialog::backdrop{background:#17120ed1}.modalhead{background:var(--ink);color:var(--paper);padding:17px 20px;font-size:19px}.modalbody{padding:17px;overflow:auto;max-height:72vh}.field{margin:10px 0}.field label{display:block;font:11px Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modalfoot{display:flex;gap:8px;padding:0 17px 17px}.modalfoot button{flex:1}
+.tools{background:var(--card);border:1px solid var(--line);padding:14px;margin:12px 0}.tools p{font:13px/1.5 Arial,sans-serif;color:#675b4c}
+a{color:var(--rust)}.notice{font:12px/1.5 Arial,sans-serif;color:var(--muted)}
+@media(min-width:600px){.record{grid-template-columns:110px 1fr}.cover{width:110px;height:110px}.brand{font-size:36px}}
+</style>
+</head>
+<body>
+<header><div class="kicker">THE PERSONAL RECORD ARCHIVE</div><div class="brand">VINYL COLLECTION</div><div class="sub">Каталог твоих пластинок · EST. 2026</div></header>
+<main>
+<section id="collection" class="panel active">
+<div class="stats">
+<div class="stat"><b id="count">0</b><span>Пластинок</span></div>
+<div class="stat"><b id="total">0</b><span>Оценка коллекции</span></div>
+<div class="stat"><b id="artists">0</b><span>Исполнителей</span></div>
+</div>
+<div class="toolbar"><input id="search" placeholder="Поиск: артист, альбом..."><button onclick="openAdd()">+ Добавить</button></div>
+<div class="toolbar"><select id="sort" onchange="render()"><option value="new">Сначала добавленные</option><option value="artist">По исполнителю</option><option value="year">По году</option><option value="price">По цене</option></select><select id="filter" onchange="render()"><option value="all">Все пластинки</option><option value="owned">С ценой</option><option value="want">Хочу купить</option></select></div>
+<div class="sectionhead"><h2>Моя коллекция</h2><small id="shown"></small></div>
+<div id="records"></div>
+</section>
+<section id="market" class="panel">
+<div class="sectionhead"><h2>Рыночный поиск</h2></div>
+<div class="tools"><p>Ищи конкретный релиз на площадках. Внешние сайты показывают объявления и предложения; цены сделок могут отличаться от выставленных цен.</p>
+<div class="field"><label>Что ищем</label><input id="marketQuery" placeholder="Исполнитель — Альбом"></div>
+<div class="grid2"><button onclick="marketSearch('discogs')">Discogs</button><button onclick="marketSearch('avito')">Авито</button><button onclick="marketSearch('mesh')">Мешок</button><button class="secondary" onclick="marketSearch('google')">Общий поиск</button></div>
+</div>
+<div class="tools"><h3>Как фиксировать цену</h3><p>Открой объявление на площадке, проверь состояние и комплектность, затем добавь наблюдение в карточку пластинки. В этой версии цены не выдаются за автоматически проверенные рыночные данные.</p></div>
+</section>
+<section id="backup" class="panel">
+<div class="sectionhead"><h2>Данные и настройки</h2></div>
+<div class="tools"><h3>Резервная копия</h3><p>Экспортируй коллекцию в JSON, чтобы сохранить копию или перенести её на другое устройство.</p><button onclick="exportData()">Экспортировать коллекцию</button><div class="field"><label>Импорт копии JSON</label><input type="file" id="importFile" accept=".json,application/json"></div></div>
+<div class="tools"><h3>Хранение</h3><p>Данные сохраняются локально в браузере на этом iPhone. Очистка данных Safari может удалить коллекцию — регулярно делай экспорт. Синхронизация iCloud между устройствами пока не подключена.</p></div>
+<div class="tools"><h3>Интеграции</h3><p>Discogs, Авито и Мешок открываются через поиск. Автоматическое получение цен из Авито и Мешка не подключено; неофициальный сбор данных может нарушать правила площадок.</p></div>
+</section>
+</main>
+<nav><button class="active" onclick="tab('collection',this)">Коллекция</button><button onclick="tab('market',this)">Цены / поиск</button><button onclick="tab('backup',this)">Настройки</button></nav>
+<dialog id="editor">
+<div class="modalhead" id="modalTitle">Новая пластинка</div>
+<form id="recordForm">
+<div class="modalbody">
+<input type="hidden" id="rid">
+<div class="field"><label>Исполнитель *</label><input id="artist" required placeholder="Например, Pink Floyd"></div>
+<div class="field"><label>Название альбома *</label><input id="album" required placeholder="Например, The Dark Side of the Moon"></div>
+<div class="grid2">
+<div class="field"><label>Год</label><input id="year" type="number" min="1900" max="2100" placeholder="1973"></div>
+<div class="field"><label>Формат</label><select id="format"><option>LP</option><option>2LP</option><option>7"</option><option>12"</option><option>EP</option><option>Box Set</option><option>Другое</option></select></div>
+</div>
+<div class="grid2">
+<div class="field"><label>Состояние винила</label><select id="condition"><option>Mint</option><option>Near Mint</option><option>VG+</option><option>VG</option><option>G+</option><option>Good</option><option>Не указано</option></select></div>
+<div class="field"><label>Статус</label><select id="status"><option value="owned">В коллекции</option><option value="want">Хочу купить</option></select></div>
+</div>
+<div class="grid2">
+<div class="field"><label>Личная цена</label><input id="price" type="number" min="0" step="0.01" placeholder="0"></div>
+<div class="field"><label>Валюта</label><select id="currency"><option>USD</option><option>EUR</option><option>RUB</option><option>SGD</option><option>GBP</option></select></div>
+</div>
+<div class="field"><label>Каталожный номер / лейбл</label><input id="catalog" placeholder="Например, SHVL 804"></div>
+<div class="field"><label>Заметки</label><textarea id="notes" rows="2" placeholder="Издание, страна, состояние конверта..."></textarea></div>
+<div class="field"><label>Фото обложки</label><input id="coverFile" type="file" accept="image/*"></div>
+<div class="field"><label>Рыночная цена / наблюдение (необязательно)</label><input id="marketPrice" type="number" min="0" step="0.01" placeholder="Цена объявления"><div class="grid2"><select id="marketSource"><option>Discogs</option><option>Авито</option><option>Мешок</option><option>Другое</option></select><input id="marketCurrency" value="USD" placeholder="Валюта"></div></div>
+</div>
+<div class="modalfoot"><button type="button" class="secondary" onclick="closeEditor()">Отмена</button><button type="submit">Сохранить</button></div>
+</form>
+</dialog>
+<script>
+const KEY='vinylCollection.v1'; let records=[];
+const $=id=>document.getElementById(id);
+function load(){try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}render()}
+function save(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function tab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+function fmt(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0)}
+function render(){
+ let q=$('search').value.toLowerCase(), f=$('filter').value, s=$('sort').value;
+ let list=records.filter(r=>(r.artist+' '+r.album+' '+(r.catalog||'')).toLowerCase().includes(q)&&(f==='all'||(f==='owned'?r.status!=='want':r.status==='want')));
+ list.sort((a,b)=>s==='artist'?a.artist.localeCompare(b.artist):s==='year'?(b.year||0)-(a.year||0):s==='price'?(b.price||0)-(a.price||0):(b.created||0)-(a.created||0));
+ $('count').textContent=records.filter(r=>r.status!=='want').length;
+ $('artists').textContent=new Set(records.map(r=>r.artist.toLowerCase())).size;
+ let sums={};records.filter(r=>r.status!=='want').forEach(r=>{let c=r.currency||'USD';sums[c]=(sums[c]||0)+(Number(r.price)||0)});
+ $('total').textContent=Object.keys(sums).length?Object.entries(sums).map(([c,v])=>fmt(v)+' '+c).join(' / '):'—';
+ $('shown').textContent=list.length+' / '+records.length;
+ $('records').innerHTML=list.length?list.map(r=>`<article class="record"><div class="cover">${r.cover?`<img src="${r.cover}">`:'♫'}</div><div><h3>${esc(r.album)}</h3><div class="artist">${esc(r.artist)}</div><div class="meta">${[r.year,r.format,r.condition,r.catalog].filter(Boolean).map(esc).join(' · ')}</div><div class="price">${r.price?fmt(r.price)+' '+esc(r.currency):'Цена не указана'} ${r.status==='want'?'· Хочу купить':''}</div><div class="actions"><button class="small" onclick="editRecord('${r.id}')">Изменить</button><button class="small secondary" onclick="findMarket('${r.id}')">Цены</button><button class="small secondary" onclick="delRecord('${r.id}')">Удалить</button></div></div></article>`).join(''):'<div class="empty">Пока здесь нет пластинок.<br>Нажми «+ Добавить», чтобы создать первую запись.</div>';
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('search').addEventListener('input',render);
+function openAdd(){ $('recordForm').reset();$('rid').value='';$('modalTitle').textContent='Новая пластинка';$('marketPrice').value='';$('editor').showModal() }
+function closeEditor(){$('editor').close()}
+function editRecord(id){let r=records.find(x=>x.id===id);if(!r)return;openAdd();$('modalTitle').textContent='Редактировать пластинку';['artist','album','year','format','condition','status','price','currency','catalog','notes'].forEach(k=>$(k).value=r[k]??'');$('rid').value=id;$('editor').showModal()}
+$('recordForm').addEventListener('submit',async e=>{e.preventDefault();let id=$('rid').value,old=records.find(x=>x.id===id),cover=old?.cover||'';let file=$('coverFile').files[0];if(file){cover=await resizeImage(file)}
+ let r={id:id||crypto.randomUUID(),created:old?.created||Date.now(),artist:$('artist').value.trim(),album:$('album').value.trim(),year:Number($('year').value)||'',format:$('format').value,condition:$('condition').value,status:$('status').value,price:Number($('price').value)||0,currency:$('currency').value,catalog:$('catalog').value,notes:$('notes').value,cover,observations:old?.observations||[]};
+ if($('marketPrice').value){r.observations.push({price:Number($('marketPrice').value),currency:$('marketCurrency').value||'USD',source:$('marketSource').value,date:new Date().toISOString()})}
+ records=id?records.map(x=>x.id===id?r:x):[r,...records];save();closeEditor()
+});
+function resizeImage(file){return new Promise(resolve=>{let img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{let c=document.createElement('canvas'),scale=Math.min(1,500/Math.max(img.width,img.height));c.width=img.width*scale;c.height=img.height*scale;c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.72))};img.src=url})}
+function delRecord(id){if(confirm('Удалить эту пластинку?')){records=records.filter(r=>r.id!==id);save()}}
+function findMarket(id){let r=records.find(x=>x.id===id);$('marketQuery').value=r.artist+' '+r.album;tab('market',document.querySelectorAll('nav button')[1])}
+function marketSearch(site){let q=$('marketQuery').value.trim();if(!q){alert('Сначала введи исполнителя и альбом');return}let u={discogs:'https://www.discogs.com/search/?q='+encodeURIComponent(q)+'&type=release',avito:'https://www.avito.ru/rossiya?q='+encodeURIComponent(q),mesh:'https://meshok.net/listing?search='+encodeURIComponent(q),google:'https://www.google.com/search?q='+encodeURIComponent(q+' винил купить')};window.open(u[site],'_blank')}
+function exportData(){let blob=new Blob([JSON.stringify(records,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vinyl-collection-backup.json';a.click();URL.revokeObjectURL(a.href)}
+$('importFile').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error();if(confirm('Импортировать '+data.length+' записей? Текущая коллекция будет заменена.')){records=data;save();alert('Импорт завершён')}}catch(err){alert('Не удалось прочитать JSON-файл')}e.target.value=''});
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+load();
+</script>
+</body></html>
